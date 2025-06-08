@@ -16,7 +16,7 @@ type Database struct {
 
 func NewDatabase(cfg *config.Config) (*Database, error) {
 	if cfg.MongoURI == "" {
-		log.Fatal("Set your 'MONGODB_URI' environment variable.")
+		log.Fatal("Set your 'MONGO_URI' environment variable.")
 	}
 
 	clientOptions := options.Client().ApplyURI(cfg.MongoURI)
