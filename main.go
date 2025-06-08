@@ -6,6 +6,7 @@ import (
 	"github.com/tahsin005/codercat-server/config"
 	"github.com/tahsin005/codercat-server/database"
 	"github.com/tahsin005/codercat-server/repository"
+	"github.com/tahsin005/codercat-server/service"
 )
 
 func main () {
@@ -20,7 +21,8 @@ func main () {
 
 	db, err := database.NewDatabase(cfg)
 	blogRepo := repository.NewBlogRepository(db, cfg)
-	log.Println(blogRepo)
+	blogService := service.NewBlogService(blogRepo)
+	log.Println(blogRepo, blogService)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB Atlas: %v", err)
 	}

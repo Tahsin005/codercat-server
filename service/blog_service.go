@@ -1,0 +1,91 @@
+package service
+
+import (
+	"context"
+
+	"github.com/tahsin005/codercat-server/domain"
+	"github.com/tahsin005/codercat-server/repository"
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
+type BlogService interface {
+	CreateBlog(ctx context.Context, blog *domain.Blog) error
+	GetBlogByID(ctx context.Context, id string) (*domain.Blog, error)
+	UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error
+	DeleteBlog(ctx context.Context, id string) error
+	GetAllBlogs(ctx context.Context) ([]*domain.Blog, error)
+	GetFeaturedBlogs(ctx context.Context) ([]*domain.Blog, error)
+	GetRecentBlogs(ctx context.Context, limit int) ([]*domain.Blog, error)
+	GetBlogsByCategory(ctx context.Context, category string) ([]*domain.Blog, error)
+	SearchBlogs(ctx context.Context, query string) ([]*domain.Blog, error)
+	GetRelatedBlogs(ctx context.Context, id string, limit int) ([]*domain.Blog, error)
+	GetCategories(ctx context.Context) ([]string, error)
+}
+
+type blogService struct {
+	repo repository.BlogRepository
+}
+
+func NewBlogService(repo repository.BlogRepository) BlogService {
+	return &blogService{repo: repo}
+}
+
+func (s *blogService) CreateBlog(ctx context.Context, blog *domain.Blog) error {
+	return s.repo.Create(ctx, blog)
+}
+
+func (s *blogService) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
+	oid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.repo.FindByID(ctx, oid)
+}
+
+func (s *blogService) UpdateBlog(ctx context.Context, id string, blog *domain.Blog) error {
+	oid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Update(ctx, oid, blog)
+}
+
+func (s *blogService) DeleteBlog(ctx context.Context, id string) error {
+	oid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(ctx, oid)
+}
+
+func (s *blogService) GetAllBlogs(ctx context.Context) ([]*domain.Blog, error) {
+	return s.repo.FindAll(ctx)
+}
+
+func (s *blogService) GetFeaturedBlogs(ctx context.Context) ([]*domain.Blog, error) {
+	return s.repo.FindFeatured(ctx)
+}
+
+func (s *blogService) GetRecentBlogs(ctx context.Context, limit int) ([]*domain.Blog, error) {
+	return s.repo.FindRecent(ctx, limit)
+}
+
+func (s *blogService) GetBlogsByCategory(ctx context.Context, category string) ([]*domain.Blog, error) {
+	return s.repo.FindByCategory(ctx, category)
+}
+
+func (s *blogService) SearchBlogs(ctx context.Context, query string) ([]*domain.Blog, error) {
+	return s.repo.Search(ctx, query)
+}
+
+func (s *blogService) GetRelatedBlogs(ctx context.Context, id string, limit int) ([]*domain.Blog, error) {
+	oid, err := bson.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	return s.repo.FindRelated(ctx, oid, limit)
+}
+
+func (s *blogService) GetCategories(ctx context.Context) ([]string, error) {
+	return s.repo.GetCategories(ctx)
+}
