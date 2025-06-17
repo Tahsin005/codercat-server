@@ -20,6 +20,7 @@ type BlogService interface {
 	SearchBlogs(ctx context.Context, query string) ([]*domain.Blog, error)
 	GetRelatedBlogs(ctx context.Context, id string, limit int) ([]*domain.Blog, error)
 	GetCategories(ctx context.Context) ([]string, error)
+	GetPopularCategories(ctx context.Context, limit int) ([]string, error)
 }
 
 type blogService struct {
@@ -88,4 +89,8 @@ func (s *blogService) GetRelatedBlogs(ctx context.Context, id string, limit int)
 
 func (s *blogService) GetCategories(ctx context.Context) ([]string, error) {
 	return s.repo.GetCategories(ctx)
+}
+
+func (s *blogService) GetPopularCategories(ctx context.Context, limit int) ([]string, error) {
+	return s.repo.GetPopularCategories(ctx, limit)
 }

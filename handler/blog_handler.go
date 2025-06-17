@@ -28,6 +28,7 @@ func (h *BlogHandler) CreateBlog(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(blog)
 }
@@ -39,6 +40,7 @@ func (h *BlogHandler) GetBlog(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blog)
 }
 
@@ -53,6 +55,7 @@ func (h *BlogHandler) UpdateBlog(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blog)
 }
 
@@ -71,6 +74,7 @@ func (h *BlogHandler) GetAllBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -80,6 +84,7 @@ func (h *BlogHandler) GetFeaturedBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -94,6 +99,7 @@ func (h *BlogHandler) GetRecentBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -104,6 +110,7 @@ func (h *BlogHandler) GetBlogsByCategory(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -114,6 +121,7 @@ func (h *BlogHandler) SearchBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -129,6 +137,7 @@ func (h *BlogHandler) GetRelatedBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(blogs)
 }
 
@@ -138,6 +147,23 @@ func (h *BlogHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(categories)
+}
+
+func (h *BlogHandler) GetPopularCategories(w http.ResponseWriter, r *http.Request) {
+	limitStr := r.URL.Query().Get("limit")
+	limit, _ := strconv.Atoi(limitStr)
+	if limit == 0 {
+		limit = 5 // default to top 5 categories
+	}
+
+	categories, err := h.service.GetPopularCategories(r.Context(), limit)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(categories)
 }
 
@@ -146,6 +172,7 @@ func (h *BlogHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/blogs/recent", h.GetRecentBlogs).Methods("GET")
 	router.HandleFunc("/blogs/search", h.SearchBlogs).Methods("GET")
 	router.HandleFunc("/categories", h.GetCategories).Methods("GET")
+	router.HandleFunc("/categories/popular", h.GetPopularCategories).Methods("GET")
 
 	router.HandleFunc("/blogs/related/{id}", h.GetRelatedBlogs).Methods("GET")
 	router.HandleFunc("/blogs/{id}", h.GetBlog).Methods("GET")

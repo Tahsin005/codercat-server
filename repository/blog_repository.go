@@ -23,6 +23,7 @@ type BlogRepository interface {
 	Search(ctx context.Context, query string) ([]*domain.Blog, error)
 	FindRelated(ctx context.Context, blogID bson.ObjectID, limit int) ([]*domain.Blog, error)
 	GetCategories(ctx context.Context) ([]string, error)
+	GetPopularCategories(ctx context.Context, limit int) ([]string, error)
 }
 
 type blogRepository struct {
@@ -189,11 +190,42 @@ func (r *blogRepository) FindRelated(ctx context.Context, blogID bson.ObjectID, 
 }
 
 func (r *blogRepository) GetCategories(ctx context.Context) ([]string, error) {
-    var categoriesArr []string
-    err := r.collection.Distinct(ctx, "category", bson.D{}).Decode(&categoriesArr)
-    if err != nil {
-        return nil, err
-    }
-    categories := append([]string{"All"}, categoriesArr...)
-    return categories, nil
+	var categoriesArr []string
+	err := r.collection.Distinct(ctx, "category", bson.D{}).Decode(&categoriesArr)
+	if err != nil {
+		return nil, err
+	}
+	categories := append([]string{"All"}, categoriesArr...)
+	return categories, nil
+}
+
+func (r *blogRepository) GetPopularCategories(ctx context.Context, limit int) ([]string, error) {
+	pipeline := mongo.Pipeline{
+		{{Key: "$group", Value: bson.D{
+			{Key: "_id", Value: "$category"},
+			{Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}},
+		}}},
+		{{Key: "$sort", Value: bson.D{{Key: "count", Value: -1}}}},
+		{{Key: "$limit", Value: limit}},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []struct {
+		Category string `bson:"_id"`
+		Count    int    `bson:"count"`
+	}
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	categories := make([]string, len(results))
+	for i, result := range results {
+		categories[i] = result.Category
+	}
+	return categories, nil
 }
