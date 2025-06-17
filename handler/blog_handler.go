@@ -142,15 +142,17 @@ func (h *BlogHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *BlogHandler) RegisterRoutes(router *mux.Router) {
-	router.HandleFunc("/blogs", h.CreateBlog).Methods("POST")
+	router.HandleFunc("/blogs/featured", h.GetFeaturedBlogs).Methods("GET")
+	router.HandleFunc("/blogs/recent", h.GetRecentBlogs).Methods("GET")
+	router.HandleFunc("/blogs/search", h.SearchBlogs).Methods("GET")
+	router.HandleFunc("/categories", h.GetCategories).Methods("GET")
+
+	router.HandleFunc("/blogs/related/{id}", h.GetRelatedBlogs).Methods("GET")
 	router.HandleFunc("/blogs/{id}", h.GetBlog).Methods("GET")
 	router.HandleFunc("/blogs/{id}", h.UpdateBlog).Methods("PUT")
 	router.HandleFunc("/blogs/{id}", h.DeleteBlog).Methods("DELETE")
+
+	router.HandleFunc("/blogs", h.CreateBlog).Methods("POST")
 	router.HandleFunc("/blogs", h.GetAllBlogs).Methods("GET")
-	router.HandleFunc("/blogs/featured", h.GetFeaturedBlogs).Methods("GET")
-	router.HandleFunc("/blogs/recent", h.GetRecentBlogs).Methods("GET")
 	router.HandleFunc("/blogs/category/{category}", h.GetBlogsByCategory).Methods("GET")
-	router.HandleFunc("/blogs/search", h.SearchBlogs).Methods("GET")
-	router.HandleFunc("/blogs/related/{id}", h.GetRelatedBlogs).Methods("GET")
-	router.HandleFunc("/categories", h.GetCategories).Methods("GET")
 }
