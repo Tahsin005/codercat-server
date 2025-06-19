@@ -17,7 +17,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Warning: Failed to load .env file: %v", err)
 	}
-	
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
@@ -33,8 +33,13 @@ func main() {
 	blogService := service.NewBlogService(blogRepo)
 	blogHandler := handler.NewBlogHandler(blogService)
 
+	subscriberRepo := repository.NewSubscriberRepository(db, cfg)
+	subscriberService := service.NewSubscriberService(subscriberRepo)
+	subscriberHandler := handler.NewSubscriberHandler(subscriberService)
+
 	router := mux.NewRouter()
 	blogHandler.RegisterRoutes(router)
+	subscriberHandler.RegisterRoutes(router)
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	if err := http.ListenAndServe(":" + cfg.Port, router); err != nil {

@@ -7,7 +7,8 @@ import (
 type Config struct {
 	MongoURI      string
 	MongoDBName   string
-	MongoCollName string
+	MongoCollNameBlogs string
+	MongoCollNameSubscribers string
 	Port          string
 }
 
@@ -15,7 +16,8 @@ func LoadConfig() (*Config, error) {
 	return &Config{
 		MongoURI:      getEnv("MONGO_URI", "mongodb://localhost:27017"),
 		MongoDBName:   getEnv("MONGO_DB_NAME", "codercat"),
-		MongoCollName: getEnv("MONGO_COLLECTION_NAME", "blogs"),
+		MongoCollNameBlogs: getEnv("MONGO_COLLECTION_NAME_BLOG", "blogs"),
+		MongoCollNameSubscribers: getEnv("MONGO_COLLECTION_NAME_SUBSCRIBERS", "subscribers"),
 		Port:          getEnv("PORT", "8080"),
 	}, nil
 }

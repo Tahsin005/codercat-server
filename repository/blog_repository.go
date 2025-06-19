@@ -32,7 +32,7 @@ type blogRepository struct {
 
 func NewBlogRepository(db *database.Database, cfg *config.Config) BlogRepository {
 	return &blogRepository{
-		collection: db.DB.Collection(cfg.MongoCollName),
+		collection: db.DB.Collection(cfg.MongoCollNameBlogs),
 	}
 }
 
