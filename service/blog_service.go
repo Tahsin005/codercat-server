@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/tahsin005/codercat-server/domain"
 	"github.com/tahsin005/codercat-server/repository"
+	"github.com/tahsin005/codercat-server/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -24,15 +26,41 @@ type BlogService interface {
 }
 
 type blogService struct {
-	repo repository.BlogRepository
+	repo              repository.BlogRepository
+	subscriberService SubscriberService
+	emailConfig       utils.EmailConfig
 }
 
-func NewBlogService(repo repository.BlogRepository) BlogService {
-	return &blogService{repo: repo}
+func NewBlogService(repo repository.BlogRepository, subscriberService SubscriberService, emailConfig utils.EmailConfig) BlogService {
+	return &blogService{
+		repo:              repo,
+		subscriberService: subscriberService,
+		emailConfig:       emailConfig,
+	}
 }
 
 func (s *blogService) CreateBlog(ctx context.Context, blog *domain.Blog) error {
-	return s.repo.Create(ctx, blog)
+	if err := s.repo.Create(ctx, blog); err != nil {
+		return err
+	}
+
+	// Notify all subscribers
+	subscribers, err := s.subscriberService.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	var emails []string
+	for _, sub := range subscribers {
+		emails = append(emails, sub.Email)
+	}
+
+	subject := fmt.Sprintf("🚨 New blog published: %s", blog.Title)
+	body := fmt.Sprintf("Check out our new blog post: %s\n\n%s", blog.Title, blog.Excerpt)
+
+	go utils.SendEmail(s.emailConfig, emails, subject, body)
+
+	return nil
 }
 
 func (s *blogService) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {

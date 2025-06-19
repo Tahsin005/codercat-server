@@ -11,6 +11,7 @@ import (
 	"github.com/tahsin005/codercat-server/handler"
 	"github.com/tahsin005/codercat-server/repository"
 	"github.com/tahsin005/codercat-server/service"
+	"github.com/tahsin005/codercat-server/utils"
 )
 
 func main() {
@@ -30,11 +31,18 @@ func main() {
 	defer db.Disconnect()
 
 	blogRepo := repository.NewBlogRepository(db, cfg)
-	blogService := service.NewBlogService(blogRepo)
-	blogHandler := handler.NewBlogHandler(blogService)
-
 	subscriberRepo := repository.NewSubscriberRepository(db, cfg)
 	subscriberService := service.NewSubscriberService(subscriberRepo)
+
+	emailCfg := utils.EmailConfig{
+		From:     cfg.SMTPEmail,
+		Password: cfg.SMTPPassword,
+		SMTPHost: cfg.SMTPHost,
+		SMTPPort: cfg.SMTPPort,
+	}
+
+	blogService := service.NewBlogService(blogRepo, subscriberService, emailCfg)
+	blogHandler := handler.NewBlogHandler(blogService)
 	subscriberHandler := handler.NewSubscriberHandler(subscriberService)
 
 	router := mux.NewRouter()
@@ -42,7 +50,7 @@ func main() {
 	subscriberHandler.RegisterRoutes(router)
 
 	log.Printf("Server starting on port %s", cfg.Port)
-	if err := http.ListenAndServe(":" + cfg.Port, router); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

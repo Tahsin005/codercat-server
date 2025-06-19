@@ -5,20 +5,28 @@ import (
 )
 
 type Config struct {
-	MongoURI      string
-	MongoDBName   string
-	MongoCollNameBlogs string
+	MongoURI                 string
+	MongoDBName              string
+	MongoCollNameBlogs       string
 	MongoCollNameSubscribers string
-	Port          string
+	Port                     string
+	SMTPEmail                string
+	SMTPPassword             string
+	SMTPHost                 string
+	SMTPPort                 string
 }
 
 func LoadConfig() (*Config, error) {
 	return &Config{
-		MongoURI:      getEnv("MONGO_URI", "mongodb://localhost:27017"),
-		MongoDBName:   getEnv("MONGO_DB_NAME", "codercat"),
-		MongoCollNameBlogs: getEnv("MONGO_COLLECTION_NAME_BLOG", "blogs"),
+		MongoURI:                 getEnv("MONGO_URI", "mongodb://localhost:27017"),
+		MongoDBName:              getEnv("MONGO_DB_NAME", "codercat"),
+		MongoCollNameBlogs:       getEnv("MONGO_COLLECTION_NAME_BLOG", "blogs"),
 		MongoCollNameSubscribers: getEnv("MONGO_COLLECTION_NAME_SUBSCRIBERS", "subscribers"),
-		Port:          getEnv("PORT", "8080"),
+		Port:                     getEnv("PORT", "8080"),
+		SMTPEmail:                getEnv("SMTP_EMAIL", ""),
+		SMTPPassword:             getEnv("SMTP_PASSWORD", ""),
+		SMTPHost:                 getEnv("SMTP_HOST", "smtp.gmail.com"),
+		SMTPPort:                 getEnv("SMTP_PORT", "587"),
 	}, nil
 }
 
