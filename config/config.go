@@ -28,7 +28,7 @@ func LoadConfig() (*Config, error) {
 		SMTPPassword:             getEnv("SMTP_PASSWORD", ""),
 		SMTPHost:                 getEnv("SMTP_HOST", "smtp.gmail.com"),
 		SMTPPort:                 getEnv("SMTP_PORT", "587"),
-		BaseURL:                  getEnv("BASE_URL", "http://localhost:8080"),
+		BaseURL:                  getEnv("BASE_URL", "https://codercat-server.onrender.com"),
 	}, nil
 }
 
