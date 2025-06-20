@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Blog Post</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #1e293b;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .content {
+      padding: 30px 20px;
+    }
+
+    .blog-title {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #c4b5fd;
+      font-weight: 700;
+    }
+
+    .blog-excerpt {
+      font-size: 16px;
+      color: #cbd5e1;
+      margin-bottom: 25px;
+    }
+
+    .blog-meta {
+      background-color: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: #f1f5f9;
+      min-width: 80px;
+    }
+
+    .meta-value {
+      color: #94a3b8;
+    }
+
+    .tag-badge {
+      background-color: #475569;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      margin-right: 5px;
+      font-size: 12px;
+      color: #e2e8f0;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: white;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .cta-button:hover {
+      opacity: 0.9;
+    }
+
+    .footer {
+      background-color: #1e293b;
+      padding: 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    @media only screen and (max-width: 600px) {
+      .container {
+        margin: 0;
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      .content {
+        padding: 20px 15px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .blog-title {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🐾 New Tale from CoderCat!</h1>
+    </div>
+
+    <div class="content">
+      <h2 class="blog-title">{{.Title}}</h2>
+      <p class="blog-excerpt">{{.Excerpt}}</p>
+
+      <div class="blog-meta">
+        <div class="meta-item">
+          <span class="meta-label">Author:</span>
+          <span class="meta-value">{{.Author}}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Category:</span>
+          <span class="meta-value">{{.Category}}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Read Time:</span>
+          <span class="meta-value">{{.ReadTime}}</span>
+        </div>
+        {{if .Tags}}
+        <div class="meta-item">
+          <span class="meta-label">Tags:</span>
+          <span class="meta-value">{{range .Tags}}<span class="tag-badge">{{.}}</span>{{end}}</span>
+        </div>
+        {{end}}
+      </div>
+
+      <a href="{{.BlogURL}}" class="cta-button">Read Full Article →</a>
+    </div>
+
+    <div class="footer">
+      <p>You're receiving this because you're subscribed to CoderCat 🐱</p>
+    </div>
+  </div>
+</body>
+</html>

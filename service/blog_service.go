@@ -29,13 +29,17 @@ type blogService struct {
 	repo              repository.BlogRepository
 	subscriberService SubscriberService
 	emailConfig       utils.EmailConfig
+	templateService   TemplateService
+	baseURL           string
 }
 
-func NewBlogService(repo repository.BlogRepository, subscriberService SubscriberService, emailConfig utils.EmailConfig) BlogService {
+func NewBlogService(repo repository.BlogRepository, subscriberService SubscriberService, emailConfig utils.EmailConfig, templateService TemplateService, baseURL string) BlogService {
 	return &blogService{
 		repo:              repo,
 		subscriberService: subscriberService,
 		emailConfig:       emailConfig,
+		templateService:   templateService,
+		baseURL:           baseURL,
 	}
 }
 
@@ -50,15 +54,36 @@ func (s *blogService) CreateBlog(ctx context.Context, blog *domain.Blog) error {
 		return err
 	}
 
+	if len(subscribers) == 0 {
+		return nil
+	}
+
 	var emails []string
 	for _, sub := range subscribers {
 		emails = append(emails, sub.Email)
 	}
 
-	subject := fmt.Sprintf("🚨 New blog published: %s", blog.Title)
-	body := fmt.Sprintf("Check out our new blog post: %s\n\n%s", blog.Title, blog.Excerpt)
+	// Prepare email data
+	emailData := domain.EmailData{
+		Title:          blog.Title,
+		Excerpt:        blog.Excerpt,
+		Author:         blog.Author,
+		Category:       blog.Category,
+		ReadTime:       blog.ReadTime,
+		Tags:           blog.Tags,
+		BlogURL:        fmt.Sprintf("%s/blogs/%s", s.baseURL, blog.ID.Hex()),
+	}
 
-	go utils.SendEmail(s.emailConfig, emails, subject, body)
+	// Render HTML template
+	htmlBody, err := s.templateService.RenderEmailTemplate("new_blog", emailData)
+	if err != nil {
+		return err
+	}
+
+	subject := fmt.Sprintf("🚀 New Blog Post: %s", blog.Title)
+
+	// Send HTML email in background
+	go utils.SendHTMLEmail(s.emailConfig, emails, subject, htmlBody)
 
 	return nil
 }

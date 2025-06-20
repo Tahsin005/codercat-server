@@ -33,6 +33,7 @@ func main() {
 	blogRepo := repository.NewBlogRepository(db, cfg)
 	subscriberRepo := repository.NewSubscriberRepository(db, cfg)
 	subscriberService := service.NewSubscriberService(subscriberRepo)
+	templateService := service.NewTemplateService("templates")
 
 	emailCfg := utils.EmailConfig{
 		From:     cfg.SMTPEmail,
@@ -41,7 +42,7 @@ func main() {
 		SMTPPort: cfg.SMTPPort,
 	}
 
-	blogService := service.NewBlogService(blogRepo, subscriberService, emailCfg)
+	blogService := service.NewBlogService(blogRepo, subscriberService, emailCfg, templateService, cfg.BaseURL)
 	blogHandler := handler.NewBlogHandler(blogService)
 	subscriberHandler := handler.NewSubscriberHandler(subscriberService)
 

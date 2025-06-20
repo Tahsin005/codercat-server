@@ -14,6 +14,7 @@ type Config struct {
 	SMTPPassword             string
 	SMTPHost                 string
 	SMTPPort                 string
+	BaseURL                  string
 }
 
 func LoadConfig() (*Config, error) {
@@ -27,6 +28,7 @@ func LoadConfig() (*Config, error) {
 		SMTPPassword:             getEnv("SMTP_PASSWORD", ""),
 		SMTPHost:                 getEnv("SMTP_HOST", "smtp.gmail.com"),
 		SMTPPort:                 getEnv("SMTP_PORT", "587"),
+		BaseURL:                  getEnv("BASE_URL", "http://localhost:8080"),
 	}, nil
 }
 
