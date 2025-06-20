@@ -14,6 +14,27 @@ import (
 	"github.com/tahsin005/codercat-server/utils"
 )
 
+// CORS middleware
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow requests from React development server
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// Handle preflight requests
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		log.Println("CORS middleware applied")
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("Warning: Failed to load .env file: %v", err)
@@ -29,6 +50,7 @@ func main() {
 		log.Fatalf("Failed to connect to MongoDB Atlas: %v", err)
 	}
 	defer db.Disconnect()
+	log.Println("Connected to MongoDB Atlas")
 
 	blogRepo := repository.NewBlogRepository(db, cfg)
 	subscriberRepo := repository.NewSubscriberRepository(db, cfg)
@@ -47,6 +69,10 @@ func main() {
 	subscriberHandler := handler.NewSubscriberHandler(subscriberService)
 
 	router := mux.NewRouter()
+
+	// Apply CORS middleware to all routes
+	router.Use(corsMiddleware)
+
 	blogHandler.RegisterRoutes(router)
 	subscriberHandler.RegisterRoutes(router)
 
