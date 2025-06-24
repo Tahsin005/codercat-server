@@ -167,12 +167,18 @@ func (h *BlogHandler) GetPopularCategories(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(categories)
 }
 
+func (h *BlogHandler) Ping(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("pong"))
+}
+
 func (h *BlogHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/blogs/featured", h.GetFeaturedBlogs).Methods("GET")
 	router.HandleFunc("/blogs/recent", h.GetRecentBlogs).Methods("GET")
 	router.HandleFunc("/blogs/search", h.SearchBlogs).Methods("GET")
 	router.HandleFunc("/categories", h.GetCategories).Methods("GET")
 	router.HandleFunc("/categories/popular", h.GetPopularCategories).Methods("GET")
+	router.HandleFunc("/ping", h.Ping).Methods("GET")
 
 	router.HandleFunc("/blogs/related/{id}", h.GetRelatedBlogs).Methods("GET")
 	router.HandleFunc("/blogs/{id}", h.GetBlog).Methods("GET")
