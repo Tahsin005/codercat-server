@@ -18,7 +18,7 @@ import (
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Allow requests from React development server
-		allowedOrigins := []string{"http://localhost:5173", "https://codercat.vercel.app"}
+		allowedOrigins := []string{"http://localhost:5173", "http://localhost:5173/", "https://codercat.vercel.app"}
 		origin := r.Header.Get("Origin")
 		for _, allowed := range allowedOrigins {
 			if origin == allowed {
