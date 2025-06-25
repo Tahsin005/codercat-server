@@ -14,20 +14,10 @@ import (
 	"github.com/tahsin005/codercat-server/utils"
 )
 
-// CORS middleware
+// CORS middleware (open to all origins, no credentials)
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
-		allowedOrigins := map[string]bool{
-			"http://localhost:5173":        true,
-			"https://codercat.vercel.app": true,
-		}
-
-		if allowedOrigins[origin] {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-		}
-
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
