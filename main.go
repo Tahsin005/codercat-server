@@ -71,6 +71,10 @@ func main() {
 	blogHandler.RegisterRoutes(router)
 	subscriberHandler.RegisterRoutes(router)
 
+	router.Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
 	log.Printf("Server starting on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
 		log.Fatalf("Server failed: %v", err)
