@@ -122,6 +122,10 @@ func (h *BlogHandler) SearchBlogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	if len(blogs) == 0 {
+		json.NewEncoder(w).Encode([]string{})
+		return
+	}
 	json.NewEncoder(w).Encode(blogs)
 }
 
